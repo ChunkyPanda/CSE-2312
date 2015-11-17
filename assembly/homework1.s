@@ -3,13 +3,46 @@
 
 main:
 	BL _scanf
-	MOV R8,R0
-	BL _getchar
-	MOV R9,R0
+	PUSH {R0}
 	BL _scanf
-	MOV R10,R0
-	BL _getop
+	POP {R1}
+	MOV R2,R0
+	MOV R6,R1
+	MOV R7,R2
+	BL _count_part
+	MOV R1, R0
+	MOV R2,R6
+	MOV R3,R7
+	BL _printf
 	B main
+
+_count_part:
+	PUSH {LR}
+	CMP R1,#0
+	MOVEQ R0,#1
+	POPEQ {PC}
+	CMP R1,#0
+	MOVLT R0,#0
+	POPLT {PC}
+	CMP R2,#0
+	MOVEQ R0,#0
+	POPEQ {PC}
+	PUSH {R1}
+	PUSH {R2}
+	SUB R1,R1,R2
+	BL _count_part
+	POP {R2}
+	POP {R1}
+	PUSH {R0}
+	PUSH {R1}
+	PUSH {R2}
+	SUB R2,R2,#1
+	BL _count_part
+	POP {R2}
+	POP {R1}
+	POP {R9}
+	ADD R0,R0,R9
+	POP {PC}
 _scanf:
 	PUSH {LR}
 	SUB SP,SP,#4
@@ -20,48 +53,17 @@ _scanf:
 	ADD SP,SP,#4
 	POP {LR}
 	MOV PC,LR
-_getchar:
-	MOV R7,#3
-	MOV R0,#0
-	MOV R2,#1
-	LDR R1,=read_char
-	SWI O
-	LDR R0, [R1]
-	AND R0, #0xFF
-	MOV PC,LR
-_getop:
-	PUSH {LR}
-	CMP R9, #'+'
-	BEQ _sum
-	CMP R9,#'-'
-	BEQ _difference
-	CMP R9,#'M'
-	BEQ _max
-	CMP R9,#'*'
-	BEQ _product
-	POP {LR}
-	MOV PC,LR
 _printf:
+	PUSH {LR}
 	LDR R0,=printf_str
-	MOV R1,R0
+	MOV R1,R1
 	BL printf
 	POP {LR}
 	MOV PC,LR
-_sum:
-	ADD R8,R8,R10
-	BL _printf
-_difference:
-	SUB R8,R8,R10
-	BL _printf
-_max:
-	MOVGE R8,R10
-	BL _printf
-_product:
-	MUL R8,R8,R10
-	BL _printf
+
 
 
 .data
 format_str:         .asciz       "%d"
 read_char:          .asciz       " "
-printf_str:        .asciz       "%d\n"
+printf_str:        .asciz       "There are %d partitions of %d using integers upto %d\n"
