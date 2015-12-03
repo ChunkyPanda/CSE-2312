@@ -45,7 +45,7 @@ sort:
 	POP {R1}
 	POP {R0}
 	CMP R2,R3
-	BEQ _sort
+	BEQ sort
 	LDR R4,[R2]
 	LDR R5,[R3]
 	STR R5,[R2]
@@ -66,7 +66,7 @@ sortLoop:
 	MOVLT R1,R4
 	ADD R0,R0,#1
 	B sortLoop
-sortDone:
+sortdone:
 	MOV R0,#0
 readLoop:
 	CMP R0,#20
