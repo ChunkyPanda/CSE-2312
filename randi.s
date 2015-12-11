@@ -8,8 +8,9 @@ writeloop:
     BEQ writedone           @ exit loop if done
     LDR R1, =a              @ get address of a
     LSL R2, R0, #2          @ multiply index*4 to get array offset
-    ADD R2, R1, R2          @ R2 now has the element address
-    STR R2, [R2]            @ write the address of a[i] to a[i]
+    ADD R2, R1, R2
+    BL _scanf          @ R2 now has the element address
+    MOV R2, R0            @ write the address of a[i] to a[i]
     ADD R0, R0, #1          @ increment index
     B   writeloop           @ branch to next loop iteration
 writedone:
@@ -50,12 +51,12 @@ _printf:
     BL printf               @ call printf
     POP {PC}                @ restore the stack pointer and return
 _scanf:
-MOV R4, LR              @ store LR since scanf call overwrites
+    MOV R4, LR              @ store LR since scanf call overwrites
     SUB SP, SP, #4          @ make room on stack
-    LDR R0, =format_str     @ R0 contains address of format string
+    LDR R3, =format_str     @ R0 contains address of format string
     MOV R1, SP              @ move SP to R1 to store entry on stack
     BL scanf                @ call scanf
-    LDR R0, [SP]            @ load value at SP into R0
+    LDR R3, [SP]            @ load value at SP into R0
     ADD SP, SP, #4          @ restore the stack pointer
     MOV PC, R4              @ retu
    
@@ -65,3 +66,4 @@ MOV R4, LR              @ store LR since scanf call overwrites
 a:              .skip       40
 printf_str:     .asciz      "a[%d] = %d\n"
 exit_str:       .ascii      "Terminating program.\n"
+format_str:      .ascii      "%d"
