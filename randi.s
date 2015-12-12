@@ -3,8 +3,8 @@
    
 main:
     MOV R0, #0
-    MOV R6, #100
-    MOV R5, #-100
+    MOV R6, #255
+    MOV R5, #-255
     MOV R8,#0
 writeloop:
     CMP R0, #10 
